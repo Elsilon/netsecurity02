@@ -1,0 +1,57 @@
+import plotly_express as px
+import plotly
+import pandas as pd
+
+# Carregar DataFrame
+df = pd.read_excel('tarefas2.xlsx', header=0)
+
+# Índices das linhas selecionadas
+indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+def grafico_gantt():
+    # Criando gráfico de Gantt
+    grafico = px.timeline(df, x_start='Inicio', x_end='Fim', y='Tarefa', color='Responsável',
+                          title='CRONOGRAMA DO PROJETO SESP RORAIMA',
+                          color_continuous_scale=px.colors.sequential.Magenta)
+
+    # Ajustando Layout
+    grafico.update_layout(title_font_size=50, font_size=14, title_font_family='Arial')
+
+    # Reordenando o gráfico
+    grafico.update_yaxes(autorange='reversed')
+
+    # Adicionando anotações das datas
+    for i, bar in enumerate(grafico.data):
+        inicio = df['Inicio'].iloc[i].strftime('%d/%m/%Y')
+        fim = df['Fim'].iloc[i].strftime('%d/%m/%Y')
+        responsavel = df['Responsável'].iloc[i]
+        detalhes_responsavel = f"Responsável: {responsavel}"
+        detalhes_datas = f"{inicio} - {fim}"
+
+        cor_texto_responsavel = 'black'
+        cor_texto_datas = 'red'
+
+        grafico.add_annotation(x=df['Inicio'].iloc[i], y=df['Tarefa'].iloc[i],
+                               text=detalhes_responsavel,
+                               showarrow=False,
+                               font=dict(color=cor_texto_responsavel),
+                               align='left',
+                               xshift=10,
+                               yshift=10)  # Adiciona um espaçamento vertical entre os textos
+
+        grafico.add_annotation(x=df['Inicio'].iloc[i], y=df['Tarefa'].iloc[i],
+                               text=detalhes_datas,
+                               showarrow=False,
+                               font=dict(color=cor_texto_datas),
+                               align='left',
+                               xshift=10,
+                               yshift=-10)  # Adiciona um espaçamento vertical entre os textos
+
+    return grafico
+
+def salvar_grafico_p_html(grafico):
+    # Salvando Grafico e exportando para HTML
+    plotly.offline.plot(grafico, filename='Grafico_Gantt.html')
+
+gantt = grafico_gantt()
+gantt.show()
