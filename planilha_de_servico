@@ -1,0 +1,68 @@
+import matplotlib.pyplot as plt
+import math
+
+def calcular_valor_projeto(valor_hora, atividades):
+    total_horas = sum(atividades.values())
+    valor_total = valor_hora * total_horas
+    total_dias = math.ceil(total_horas / 8)  # Arredondar para cima para obter o número de dias
+    return total_horas, valor_total, total_dias
+
+def gerar_grafico(atividades, valor_total, valor_hora):
+    # Extrair total de horas do valor_total
+    total_horas = valor_total / valor_hora
+
+    plt.figure(figsize=(10, 6))
+
+    # Gerar cores diferentes para cada atividade
+    cores = ['skyblue', 'lightgreen', 'lightcoral', 'gold', 'lightpink', 'lightsalmon']
+
+    # Plotar as barras com as cores definidas
+    for i, (atividade, horas) in enumerate(atividades.items()):
+        plt.bar(atividade, horas, color=cores[i])
+
+    plt.xlabel('Atividade')
+    plt.ylabel('Horas')
+    plt.title('Horas dedicadas a cada atividade')
+    plt.grid(True)
+
+    # Adicionar as horas acima das barras
+    for i, (atividade, horas) in enumerate(atividades.items()):
+        plt.text(atividade, horas, str(horas), ha='center', va='bottom')
+
+    # Mostrar o valor total no gráfico com uma fonte maior e negrito
+    plt.text(len(atividades) / 2, max(atividades.values()) + 10,
+             f'Valor Total: R$ {valor_total:.2f}', ha='center', va='bottom',
+             fontsize=18, fontweight='bold')
+
+    plt.text(len(atividades) / 2, max(atividades.values()) + 20,
+             f'Total de horas: {total_horas:.2f} horas', ha='center', va='bottom',
+             fontsize=14)
+
+    # Exibir o valor total do projeto no gráfico
+    plt.text(len(atividades) / 2, -10,
+             f'Valor total do projeto: R$ {valor_total:.2f}', ha='center', va='bottom',
+             fontsize=14, fontweight='bold')
+
+    plt.show()
+
+
+def main():
+    valor_hora = 112
+    atividades = {
+        'Fase 01': 8,
+        'Fase 02': 24,
+        'Fase 03': 16,
+        'Implementação do novo Firewall': 32,
+        'Análise pós produção': 8,
+        'Documentação': 32
+    }
+
+    total_horas, valor_total, total_dias = calcular_valor_projeto(valor_hora, atividades)
+    gerar_grafico(atividades, valor_total, valor_hora)
+
+    print(f"Total de horas: {total_horas:.2f} horas")
+    print(f"Total de dias equivalentes: {total_dias} dias")
+    print(f"Valor total do projeto: R$ {valor_total:.2f}")
+
+if __name__ == "__main__":
+    main()
