@@ -1,0 +1,38 @@
+from netmiko import ConnectHandler
+
+# Dados de autenticação SSH e informações dos roteadores
+router1 = {
+    "device_type": "cisco_ios",
+    "ip": "192.168.1.1",
+    "username": "your_username",
+    "password": "your_password",
+}
+
+router2 = {
+    "device_type": "cisco_ios",
+    "ip": "192.168.2.1",
+    "username": "your_username",
+    "password": "your_password",
+}
+
+# Comandos de configuração BGP
+bgp_commands_router1 = [
+    "router bgp 65001",
+    "neighbor 192.168.1.2 remote-as 65001",
+]
+
+bgp_commands_router2 = [
+    "router bgp 65001",
+    "neighbor 192.168.2.2 remote-as 65001",
+]
+
+# Função para configurar roteador
+def configure_router(router, commands):
+    with ConnectHandler(**router) as conn:
+        conn.enable()
+        output = conn.send_config_set(commands)
+        print(output)
+
+# Configurando roteadores
+configure_router(router1, bgp_commands_router1)
+configure_router(router2, bgp_commands_router2)
